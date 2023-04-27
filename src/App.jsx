@@ -1,35 +1,57 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useCallback, useState } from 'react';
+import './App.css';
+import Movies from './components/movies';
+import { useMovies } from './hooks/useMovies';
+import { useSearch } from './hooks/useSearch';
+import debounce from 'just-debounce-it';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { search, updateSearch, error } = useSearch();
+  const [sort, setSort] = useState(false);
+  const { movies, getMovies, loading } = useMovies({ search, sort });
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedGetMovies = useCallback(
+    debounce((search) => {
+      getMovies({ search });
+    }, 300),
+    [getMovies]
+  );
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    getMovies({ search });
+  };
+
+  const handleChange = (event) => {
+    const newSearch = event.target.value;
+    updateSearch(newSearch);
+    debouncedGetMovies(newSearch);
+  };
+
+  const handleSort = () => {
+    if (search) setSort((prevSort) => !prevSort);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="page">
+      <header>
+        <h1>Movie finder</h1>
+        <form className="form" onSubmit={handleSubmit}>
+          <input
+            value={search}
+            onChange={handleChange}
+            name="search"
+            placeholder="Avengers, Harry Potter,..."
+          />
+          <input type="checkbox" onChange={handleSort} checked={sort} />
+          <button type="submit">Search</button>
+        </form>
+        {error && <p className="validError">{error}</p>}
+      </header>
+      <main>{loading ? <p>Cargando...</p> : <Movies movies={movies} />}</main>
+    </div>
+  );
 }
 
-export default App
+export default App;

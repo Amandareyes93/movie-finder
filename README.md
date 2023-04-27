@@ -13,3 +13,9 @@ Primera iteración:
 ✅ Evitar que se haga la misma búsqueda dos veces seguidas.
 ✅ Haz que la búsqueda se haga automáticamente al escribir.
 ✅ Evita que se haga la búsqueda continuamente al escribir (debounce)
+
+Here is your key: cf2cafc0
+
+Please append it to all of your API requests,
+
+OMDb API: http://www.omdbapi.com/?i=tt3896198&apikey=cf2cafc0
