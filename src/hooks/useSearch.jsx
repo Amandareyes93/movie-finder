@@ -17,5 +17,6 @@ export function useSearch() {
     }
     setError(null);
   }, [search]);
+
   return { search, updateSearch, error };
 }
